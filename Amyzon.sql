@@ -1,0 +1,10 @@
+CREATE DATABASE AmyzonDB;
+use AmyzonDB;
+CREATE TABLE products(
+productID INTEGER(10) NOT NULL AUTO_INCREMENT,
+productName VARCHAR(25),
+departmentID INTEGER(10),
+productPrice INTEGER(10) NOT NULL,
+productQty INTEGER(10) NOT NULL,
+PRIMARY KEY (productID)
+);
