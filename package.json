@@ -1,0 +1,23 @@
+{
+  "name": "week-12-mysql",
+  "version": "1.0.0",
+  "description": "Week 12 Homework - MySQL and Node.js",
+  "main": "AmyzonCLI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EternalVigil/week-12-mysql.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EternalVigil/week-12-mysql/issues"
+  },
+  "homepage": "https://github.com/EternalVigil/week-12-mysql#readme",
+  "dependencies": {
+    "inquirer": "^2.0.0",
+    "mysql": "^2.12.0"
+  }
+}
