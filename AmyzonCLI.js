@@ -57,6 +57,7 @@ function goShopping() {
 
 
 	});
+	
 }
 
 //Create connection to MySQL database
@@ -99,6 +100,7 @@ function getQty(connection, product, qtyRequest) {
 		}
 		else if (availableStock < qtyRequest){
 			console.log("We don't have enough.");
+			goShopping();
 		}
 		else{
 			console.log("I dunno.");
@@ -109,8 +111,20 @@ function getQty(connection, product, qtyRequest) {
 
 function updateQty(connection, product, availableQty, desiredQty) {
 	"use strict";
+	var productPrice = 0;
+	
+	connection.query("SELECT productPrice from products WHERE ?", [{productName: product}], function(error, response){
+		if (error){
+			return console.log(error);
+		}
+		productPrice = response[0].productPrice;
+		console.log("Order Total: $" + (productPrice * desiredQty));
+	});
+	
+	
+	
 	connection.query("UPDATE products SET ? WHERE ?", [{
-		productQty: availableQty - desiredQty
+		productQty: (availableQty - desiredQty)
 	}, {
 		productName: product
 	}], function (error, response) {
@@ -119,6 +133,7 @@ function updateQty(connection, product, availableQty, desiredQty) {
 		}
 		console.log(response);
 	});
+	console.log("\n");
 }
 
 userLogin();
