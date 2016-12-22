@@ -2,8 +2,9 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 
-function userInput() {
+function userLogin() {
 	"use strict";
+	//Path selection for user action
 	inquirer.prompt([{
 		name: "userChoice",
 		type: "list",
@@ -12,7 +13,7 @@ function userInput() {
 
 	}]).then(function (answers) {
 		if (answers.userChoice === "User Login") {
-			userLogin();
+			goShopping();
 		} else if (answers.userChoice === "Create New User") {
 			createUser();
 		} else if (answers.userChoice === "Exit") {
@@ -24,50 +25,41 @@ function userInput() {
 	});
 }
 
-function userLogin() {
+function goShopping() {
 	"use strict";
 	var connection = Connection();
-	
-	connection.query("SELECT productName from products", function(error, data){
-		if (error){
+	connection.query("SELECT productName from products", function (error, data) {
+		if (error) {
 			return console.log(error);
 		}
 		var productList = [];
-		for (var i = 0; i < data.length; i++){
+		for (var i = 0; i < data.length; i++) {
 			productList.push(data[i].productName);
 		}
+		
 
-		inquirer.prompt([
-			{
+		inquirer.prompt([{
 				name: "productChoice",
 				type: "list",
 				message: "Select the product you wish to buy",
 				choices: productList
-			},
-			{
+			}, {
 				name: "qtyInput",
 				type: "input",
 				message: "And how many of that item would you like?"
 			}
-			
-		]).then(function(answers){
-			connection.query("SELECT productQty from products WHERE ?", {productName:answers.productChoice}, function(error, result){
-				if (answers.qtyInput > result){
-					return console.log("Sorry, we don't have that many of that item in stock...");
-				}
-				else{
-					console.log("You're in luck, we have more than enough.");
-				}
-			});
-			
-			console.log("Total comes out to $; cash or charge?");
-		});
-		
-		
-	});
 
+		]).then(function (answers) {
+			getQty(connection, answers.productChoice, answers.qtyInput);
+			
+		});
+
+
+
+	});
 }
 
+//Create connection to MySQL database
 function Connection() {
 	"use strict";
 	var connection = mysql.createConnection({
@@ -84,14 +76,48 @@ function Connection() {
 		} else {
 			console.log("connected to database. " + connection.threadId);
 		}
-
-
 	});
-
-
 	return connection;
 
 }
 
+function getQty(connection, product, qtyRequest) {
+	"use strict";
+	console.log("Getting product available quantity.");
+	connection.query("SELECT productQty from products WHERE ?", [{productName: product}], function (error, response) {
+		if (error) {
+			return console.log(error);
+		}
+		console.log("database query established.");
+		var x = response[0].productQty;
+		
+		console.log(x + " " + qtyRequest);
+		
+		if (x >= qtyRequest){
+			console.log("We have enough.");
+		}
+		else if (x < qtyRequest){
+			console.log("We don't have enough.");
+		}
+		else{
+			console.log("I dunno.");
+		}
+		
+	});
+}
 
-userInput();
+function updateQty(connection, product, qty) {
+	"use strict";
+	connection.query("UPDATE products SET ? WHERE ?", [{
+		productQty: qty
+	}, {
+		productName: product
+	}], function (error, response) {
+		if (error) {
+			return console.log(error);
+		}
+		console.log(response);
+	});
+}
+
+userLogin();
