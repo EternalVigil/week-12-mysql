@@ -89,14 +89,15 @@ function getQty(connection, product, qtyRequest) {
 			return console.log(error);
 		}
 		console.log("database query established.");
-		var x = response[0].productQty;
+		var availableStock = response[0].productQty;
 		
-		console.log(x + " " + qtyRequest);
+		console.log(availableStock + " " + qtyRequest);
 		
-		if (x >= qtyRequest){
+		if (availableStock >= qtyRequest){
 			console.log("We have enough.");
+			updateQty(connection, product, availableStock, qtyRequest);
 		}
-		else if (x < qtyRequest){
+		else if (availableStock < qtyRequest){
 			console.log("We don't have enough.");
 		}
 		else{
@@ -106,10 +107,10 @@ function getQty(connection, product, qtyRequest) {
 	});
 }
 
-function updateQty(connection, product, qty) {
+function updateQty(connection, product, availableQty, desiredQty) {
 	"use strict";
 	connection.query("UPDATE products SET ? WHERE ?", [{
-		productQty: qty
+		productQty: availableQty - desiredQty
 	}, {
 		productName: product
 	}], function (error, response) {
